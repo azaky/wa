@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WA Gen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="columns">
+      <div class="column col-6 col-xs-12" style="padding-left: 0.8rem; padding-right: 0.8rem">
+        <h2 style="padding-top: 1rem;">WA Gen</h2>
+        <p>Send WhatsApp messages without saving the numbers to contacts!</p>
+        <form id="form">
+          <div class="form-group">
+            <input class="form-input" type="text" placeholder="Phone Number" id="phone">
+            <p style="display:none" class="form-input-hint" id="phone-error"></p>
+          </div>
+          <div class="form-group">
+            <textarea class="form-input" rows="3" placeholder="Text (optional)" id="text"></textarea>
+          </div>
+          <input disabled type="submit" class="btn btn-primary" value="Send" id="submit">
+          <button class="btn" id="clear">Clear</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      var _error = document.getElementById('phone-error');
+      var _phone = document.getElementById('phone');
+      var _text = document.getElementById('text');
+      var _submit = document.getElementById('submit');
+      function clearError() {
+        _error.style.display = 'none';
+        _phone.classList.remove('is-error');
+        _submit.removeAttribute('disabled');
+      }
+      function error(message) {
+        _error.innerHTML = message;
+        _error.style.display = 'block';
+        _phone.classList.add('is-error');
+        _submit.setAttribute('disabled', '');
+      }
+      function validate() {
+        var phone = _phone.value;
+        // too lazy to actually test for valid phone number
+        if (!/^\+?[\(\)0-9\-\s]+$/.test(phone)) {
+          return error('Phone number must contain only numbers and +-()');
+        }
+        var length = phone.replace(/\S/, '').length;
+        if (length < 6 || length > 18) {
+          return error('Phone number must contain between 6 and 18 digits');
+        }
+        clearError();
+      }
+      _phone.addEventListener('keyup', validate);
+      document.getElementById('form').onsubmit = function(e) {
+        e.preventDefault();
+        validate();
+        var phone = _phone.value.replace(/\D/g, '').replace(/^0/, '62');
+        var text = _text.value;
+        var url = 'https://api.whatsapp.com/send?phone='+encodeURI(phone)+'&text='+encodeURI(text);
+        window.open(url);
+      };
+      document.getElementById('clear').onclick = function(e) {
+        e.preventDefault();
+        _phone.value = '';
+        _text.value = '';
+        clearError();
+        _submit.setAttribute('disabled', '');
+        _phone.focus();
+      }
+    });
+  </script>
+</body>
+</html>
