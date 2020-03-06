@@ -19,6 +19,12 @@
           <div class="form-group">
             <textarea class="form-input" rows="3" placeholder="Text (optional)" id="text"></textarea>
           </div>
+          <div class="form-group">
+            <label class="form-switch">
+              <input type="checkbox" id="web">
+              <i class="form-icon"></i> Use WhatsApp Web
+            </label>
+          </div>
           <input disabled type="submit" class="btn btn-primary" value="Send" id="submit">
           <button class="btn" id="clear">Clear</button>
         </form>
@@ -31,6 +37,7 @@
       var _phone = document.getElementById('phone');
       var _text = document.getElementById('text');
       var _submit = document.getElementById('submit');
+      var _web = document.getElementById('web');
       function clearError() {
         _error.style.display = 'none';
         _phone.classList.remove('is-error');
@@ -46,21 +53,27 @@
         var phone = _phone.value;
         // too lazy to actually test for valid phone number
         if (!/^\+?[\(\)0-9\-\s]+$/.test(phone)) {
-          return error('Phone number must contain only numbers and +-()');
+          error('Phone number must contain only numbers and +-()');
+          return false;
         }
         var length = phone.replace(/\S/, '').length;
         if (length < 6 || length > 18) {
-          return error('Phone number must contain between 6 and 18 digits');
+          error('Phone number must contain between 6 and 18 digits');
+          return false;
         }
         clearError();
+        return true;
       }
       _phone.addEventListener('keyup', validate);
       document.getElementById('form').onsubmit = function(e) {
         e.preventDefault();
-        validate();
+        if (!validate()) {
+          return;
+        }
         var phone = _phone.value.replace(/\D/g, '').replace(/^0/, '62');
         var text = _text.value;
-        var url = 'https://api.whatsapp.com/send?phone='+encodeURI(phone)+'&text='+encodeURI(text);
+        var web = _web.checked;
+        var url = 'https://'+(web?'web':'api')+'.whatsapp.com/send?phone='+encodeURI(phone)+'&text='+encodeURI(text);
         window.open(url);
       };
       document.getElementById('clear').onclick = function(e) {
