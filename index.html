@@ -73,7 +73,7 @@
         var phone = _phone.value.replace(/\D/g, '').replace(/^0/, '62');
         var text = _text.value;
         var web = _web.checked;
-        var url = 'https://'+(web?'web':'api')+'.whatsapp.com/send?phone='+encodeURI(phone)+'&text='+encodeURI(text);
+        var url = 'https://'+(web?'web':'api')+'.whatsapp.com/send?phone='+encodeURIComponent(phone)+'&text='+encodeURIComponent(text);
         window.open(url);
       };
       document.getElementById('clear').onclick = function(e) {
